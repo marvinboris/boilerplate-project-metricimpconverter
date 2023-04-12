@@ -3,16 +3,19 @@ function ConvertHandler() {
   this.getNum = function(input) {
     let result;
 
-    const regex = /(\d+(\.\d+)?(\/\d+)?)\s*([a-zA-Z]+)/;
+    const regex = /(\d+(\.\d+)?(\/\d+(\.\d+)?)?)\s*([a-zA-Z]+)/;
     const match = input.match(regex);
 
-    function convertFractionToNumber(fraction) {
-      const [numerator, denominator] = fraction.split('/').map(str => parseInt(str, 10));
+    const convertFractionToNumber = (fraction) => {
+      const [numerator, denominator] = 
+        fraction.split('/').map(str => parseFloat(str));
       return numerator / denominator;
     }
 
     if (input.split('/').length > 2) return 'invalid number';
-    else if (match) result = match[3] ? convertFractionToNumber(match[1]) : parseFloat(match[1]);
+    else if (match) result = match[3] ?
+      convertFractionToNumber(match[1]) : 
+      parseFloat(match[1]);
     else result = 1;
     
     return result;
@@ -21,13 +24,16 @@ function ConvertHandler() {
   this.getUnit = function(input) {
     let result;
 
-    const regex = /(\d+(\.\d+)?(\/\d+)?)\s*([a-zA-Z]+)/;
+    const regex = /(\d+(\.\d+)?(\/\d+(\.\d+)?)?)\s*([a-zA-Z]+)/;
     const match = input.match(regex);
 
-    if (match) result = match[4];
+    if (match) result = match[5];
     else result = input;
 
-    if (!['gal', 'L', 'lbs', 'kg', 'mi', 'km'].includes(result)) return 'invalid unit';
+    if (!['gal', 'l', 'lbs', 'kg', 'mi', 'km'].includes(result.toLowerCase())) 
+      return 'invalid unit';
+
+    result = result.toLowerCase() === 'l' ? 'L' : result.toLowerCase();
     
     return result;
   };
@@ -39,10 +45,10 @@ function ConvertHandler() {
       'gal': 'L',
       'lbs': 'kg',
       'mi': 'km',
-      'L': 'gal',
+      'l': 'gal',
       'kg': 'lbs',
       'km': 'mi'
-    }[initUnit];
+    }[initUnit.toLowerCase()];
 
     return result;
   };
@@ -54,10 +60,10 @@ function ConvertHandler() {
       'gal': 'gallons',
       'lbs': 'pounds',
       'mi': 'miles',
-      'L': 'liters',
+      'l': 'liters',
       'kg': 'kilograms',
       'km': 'kilometers'
-    }[unit];
+    }[unit.toLowerCase()];
     
     return result;
   };
@@ -72,10 +78,10 @@ function ConvertHandler() {
       'gal': galToL,
       'lbs': lbsToKg,
       'mi': miToKm,
-      'L': 1 / galToL,
+      'l': 1 / galToL,
       'kg': 1 / lbsToKg,
       'km': 1 / miToKm
-    }[initUnit] * initNum;
+    }[initUnit.toLowerCase()] * initNum;
     
     return result;
   };
